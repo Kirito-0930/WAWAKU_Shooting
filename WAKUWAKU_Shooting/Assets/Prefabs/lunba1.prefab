@@ -154,6 +154,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 3
-  _bulletName: {fileID: 4719503838128516827, guid: 41df78f5a1ca68142b98d4dad916368a,
+  _bulletPrefab: {fileID: 7656408847144877624, guid: 41df78f5a1ca68142b98d4dad916368a,
     type: 3}
   _bulletSpawn: {fileID: 471165128945146859}
+  _interval: 0.2
+  _moveHorizontal: 0
+  _moveVertical: 0
