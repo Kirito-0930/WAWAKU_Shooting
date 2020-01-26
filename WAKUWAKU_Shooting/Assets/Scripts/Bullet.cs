@@ -10,6 +10,7 @@ public class Bullet : MonoBehaviour
     void Start()
     {
         gameObject.GetComponent<Rigidbody>().velocity = -transform.forward * _speed;
+        transform.Rotate(transform.forward, Random.Range(0, 360f));
     }
 
     void Update()

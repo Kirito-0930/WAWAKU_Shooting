@@ -13,8 +13,8 @@ public class Player1 : MonoBehaviour
     /// <summary> 弾の発射間隔 </summary>
     [SerializeField] float _interval = 0.3f;
 
-    public float _moveHorizontal;
-    public float _moveVertical;
+    float _moveHorizontal;
+    float _moveVertical;
     /// <summary> 弾発射中の経過時間 </summary>
     float _elapsedTime;
 
@@ -38,7 +38,7 @@ public class Player1 : MonoBehaviour
     /// <summary>
     /// Player1の方向
     /// </summary>
-    public virtual void Direction()
+    void Direction()
     {
         float _directionHorizontal = Input.GetAxis("Horizontal2_1");
         float _directionVertical = Input.GetAxis("Vertical2_1");
@@ -56,7 +56,7 @@ public class Player1 : MonoBehaviour
     /// <summary>
     /// Player1の移動
     /// </summary>
-    public virtual void Move()
+    void Move()
     {
         _moveHorizontal = Input.GetAxis("Horizontal1_1");
         _moveVertical = Input.GetAxis("Vertical1_1");
@@ -73,7 +73,7 @@ public class Player1 : MonoBehaviour
     /// <summary>
     /// 弾を撃つ
     /// </summary>
-    public virtual void Shoot()
+    void Shoot()
     {
         _elapsedTime += Time.deltaTime;
         if (_elapsedTime > _interval) {
