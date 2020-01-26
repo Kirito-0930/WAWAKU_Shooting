@@ -8,17 +8,20 @@ public class Title : MonoBehaviour
     /// <summary> ボタンを押してからシーンが変わるまでの時間 </summary>
     [SerializeField] float _interval = 1.5f;
     [SerializeField] AudioClip sound1;
-    AudioSource audioSource;
+    AudioSource _se;
+    AudioSource _bgm;
 
     void Start()
     {
-        audioSource = GetComponent<AudioSource>();
+        _se = GetComponents<AudioSource>()[0];
+        _bgm = GetComponents<AudioSource>()[1];
     }
  
     void Update()
     {
-        if (Input.GetKeyDown("Fire1_1")) {
-            audioSource.PlayOneShot(sound1);
+        if (Input.GetButtonDown("Fire2")) {
+            _bgm.Stop();Debug.Log("aaa");
+            _se.PlayOneShot(sound1);
             StartCoroutine(NextScene(_interval));
         }
     }

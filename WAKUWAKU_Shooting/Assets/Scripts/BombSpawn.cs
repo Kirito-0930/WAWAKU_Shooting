@@ -7,19 +7,33 @@ public class BombSpawn : MonoBehaviour
     [SerializeField]
     private Bomb _bomb = null;
 
+    //爆弾の最大数
     public int _maxBombNum = 100;
     private Bomb[] _bombs = null;
 
+    //開始時の爆弾の数
     public int _startBombNum = 5;
+    //爆弾の出現時間
     public float _startSpawnTime = 5.0f;
-    public float _bombSpawnTimeInterval = 0.5f;
-    public float _maxSpawnTime = 2.0f;
 
-    private int _bombsCount = 0;
+    //爆弾の出現時間
+    public int _bombsTimeIntervalCount = 10;
+    //爆弾の出現時間が減る間隔
+    public float _bombsTimeInterval = 0.5f;
+    //最終的な爆弾の出現時間
+    public float _minSpawnTime = 2.0f;
+
+
+    private int _bombsTotalCount = 0;
+    private int _bombsNawCount = 0;
+
+    public void DecrementTotalbombsCount() {
+        _bombsNawCount--;
+    }
 
     void Start()
     {
-        _bombsCount = _startBombNum;
+        _bombsNawCount = 0;
         _bombs = new Bomb[_maxBombNum];
         for (int i = 0; i < _startBombNum; ++i)
         {
@@ -28,26 +42,32 @@ public class BombSpawn : MonoBehaviour
         StartCoroutine(SpawnBomb());
     }
 
-    void Update()
-    {
-        var a = Time.deltaTime;
-    }
-
     private void CreateBomb()
     {
-        _bombs[_bombsCount] = GameObject.Instantiate(_bomb);
-        Vector3 pos;
-        pos.x = Random.Range(0, 10);
-        pos.y = 0;
-        pos.z = Random.Range(0, 10);
-        _bombs[_bombsCount].transform.Translate(pos);
-        _bombsCount++;
+        if (_bombsNawCount < _maxBombNum) {
+            var i = 0;
+            while (_bombs[i] != null)
+            {
+                i++;
+            }
+            _bombs[i] = Instantiate(_bomb);
+            Vector3 pos = new Vector3(Random.Range(-7.0f, 7.0f), -5.0f, Random.Range(-5.0f, 5.0f));
+            _bombs[i].transform.Translate(pos);
+            _bombsTotalCount++;
+            _bombsNawCount++;
+
+            if (_bombsTotalCount > _bombsTimeIntervalCount&& _startSpawnTime>_minSpawnTime) {
+                _bombsTimeIntervalCount += 10;
+                _startSpawnTime -= _bombsTimeInterval;
+            }
+        }
     }
 
     private IEnumerator CreateBombCoroutine() {
         CreateBomb();
         yield return null;//1フレーム
     }
+
     private IEnumerator SpawnBomb()
     {
         while (true)
