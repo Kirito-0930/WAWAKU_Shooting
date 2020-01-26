@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class GameView : MonoBehaviour
 {
+    /// <summary> Player1のPrefab </summary>
     [SerializeField] GameObject _player1Prefab;
+    /// <summary> Player2のPrefab </summary>
     [SerializeField] GameObject _player2Prefab;
 
     Vector3 _centerPoint;
@@ -16,17 +18,17 @@ public class GameView : MonoBehaviour
         _centerPoint = new Vector3(UnityEngine.Random.Range(-1.0f, 1.3f), -5.0f, 0.0f);
         PlayerCreate(_player1Prefab);
         PlayerCreate(_player2Prefab);
-
-        var controllerNames = Input.GetJoystickNames();
-        Debug.Log(controllerNames[0] + "/" + controllerNames[1]);
     }
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space)) PlayerCreate(_player1Prefab);
-        //KeyDownCheck();
+       
     }
 
+    /// <summary>
+    /// ゲームスタート時にPlayerを生成
+    /// </summary>
+    /// <param name="_player">_player1Prefab、_player2Prefabが渡される</param>
     void PlayerCreate(GameObject _player)
     {
         if (_player == _player1Prefab) {
@@ -34,20 +36,6 @@ public class GameView : MonoBehaviour
             Instantiate(_player, _centerPoint + _pos, Quaternion.identity);
         } else if (_player == _player2Prefab) {
             Instantiate(_player, _centerPoint + (-_pos), Quaternion.identity);
-        }
-    }
-
-    /// <summary>
-    /// どのボタンが押されたかをチェックする
-    /// </summary>
-    void KeyDownCheck()
-    {
-        if(Input.anyKeyDown)
-            foreach (KeyCode code in Enum.GetValues(typeof(KeyCode))) {
-            if (Input.GetKeyDown(code)) {
-                Debug.Log(code);
-                break;
-            }
         }
     }
 }

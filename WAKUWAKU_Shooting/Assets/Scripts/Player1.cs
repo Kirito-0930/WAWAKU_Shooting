@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player1 : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class Player1 : MonoBehaviour
     [SerializeField] int _speed = 3;
     /// <summary> 弾のプレハブ </summary>
     [SerializeField] GameObject _bulletPrefab;
+    /// <summary> Player1のHPゲージ </summary>
+    [SerializeField] Image _hpGauge;
     /// <summary> 弾の発射点 </summary>
     [SerializeField] Transform _bulletSpawn;
     /// <summary> 弾の発射間隔 </summary>
@@ -17,10 +20,13 @@ public class Player1 : MonoBehaviour
     float _moveVertical;
     /// <summary> 弾発射中の経過時間 </summary>
     float _elapsedTime;
+    /// <summary> Player1のHP </summary>
+    public int _hp = 10;
+    int _maxHp;
 
     void Start()
     {
-        
+        _maxHp = _hp;
     }
 
     void Update()
@@ -28,11 +34,20 @@ public class Player1 : MonoBehaviour
         Direction();
         Move();
         Clamp();
+        DeathJudgment();
+        PhysicalView();
     }
 
     void FixedUpdate()
     {
         gameObject.GetComponent<Rigidbody>().velocity = new Vector3(_moveHorizontal * _speed, 0.0f, _moveVertical * _speed);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Bullet") {
+            _hp--;
+        }
     }
 
     /// <summary>
@@ -80,5 +95,23 @@ public class Player1 : MonoBehaviour
             Instantiate(_bulletPrefab, _bulletSpawn.position, transform.localRotation);
             _elapsedTime = 0f;
         }
+    }
+
+    /// <summary>
+    /// Player1が死んだかどうかの判定
+    /// </summary>
+    void DeathJudgment()
+    {
+        if (_hp <= 0) { 
+        
+        }
+    }
+
+    /// <summary>
+    /// PlayerHPの表示
+    /// </summary>
+    void PhysicalView()
+    {
+        _hpGauge.fillAmount = (float)_hp / _maxHp;
     }
 }
