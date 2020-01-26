@@ -31,11 +31,13 @@ public class Player2 : MonoBehaviour
 
     void Update()
     {
-        Direction();
-        Move();
-        Clamp();
-        DeathJudgment();
-        PhysicalView();
+        if (GameView._gamePlay) {
+            Direction();
+            Move();
+            Clamp();
+            DeathJudgment();
+            PhysicalView();
+        }
     }
 
     void FixedUpdate()
@@ -103,7 +105,7 @@ public class Player2 : MonoBehaviour
     void DeathJudgment()
     {
         if (_hp <= 0) {
-
+            GameView._player1 = true;
         }
     }
 
