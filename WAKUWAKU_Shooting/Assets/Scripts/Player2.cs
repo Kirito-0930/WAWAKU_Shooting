@@ -31,7 +31,7 @@ public class Player2 : MonoBehaviour
 
     void Update()
     {
-        if (GameView._gamePlay) {
+        if (GameView.isGamePlay) {
             Direction();
             Move();
             Clamp();
@@ -48,6 +48,9 @@ public class Player2 : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Bullet") {
+            _hp--;
+        }
+        else if (other.gameObject.tag == "BombBullet") {
             _hp--;
         }
     }
@@ -105,7 +108,7 @@ public class Player2 : MonoBehaviour
     void DeathJudgment()
     {
         if (_hp <= 0) {
-            GameView._player1 = true;
+            GameView.isPlayer1 = true;
         }
     }
 

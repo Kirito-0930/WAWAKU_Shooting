@@ -5,7 +5,7 @@ using UnityEngine;
 public class BombBullet : MonoBehaviour
 {
 
-    private Vector3 _pos;
+    Vector3 _pos;
 
     private float _time = 0.0f;
 
@@ -15,47 +15,49 @@ public class BombBullet : MonoBehaviour
     //移動スピード
     public float _moveVol = 1.0f;
 
-    [SerializeField]
-    private float _speed = 3.0f;
+    [SerializeField] float _speed = 3.0f;
 
     Rigidbody _rb;
 
     void Start()
     {
-        _pos.x = Random.Range(-_moveVol, _moveVol);
-        _pos.z = Random.Range(-_moveVol, _moveVol);
+        _pos.x = Random.Range(_moveVol * -1, _moveVol);
+        _pos.z = Random.Range(_moveVol * -1, _moveVol);
         gameObject.transform.Translate(_pos);
         gameObject.transform.Rotate(_pos);
         _rb = GetComponent<Rigidbody>();
         transform.rotation = Quaternion.LookRotation(_pos.normalized);
-        GetComponent<Rigidbody>().velocity = transform.forward * _speed;
+        _rb.velocity = transform.forward * _speed;
     }
 
     void Update()
     {
-        _time += Time.deltaTime;
         if (_time > _destroyTime) {
             Destroy(gameObject);
         }
+        Clamp();
     }
 
-    private void OnTriggerEnter(Collider other)//ぶつかったら｛｝内の処理が実行
+    void FixedUpdate()
+    {
+        _time += Time.deltaTime;
+    }
+
+    private void OnTriggerEnter(Collider other)
     {
 
-        if (other.gameObject.tag == "Player")
-        {
+        if (other.gameObject.tag == "Player") {
             Destroy(gameObject);
         }
-        else if(other.gameObject.tag == "Wall")
-        {
-            //1.動いてる物体(this)と当たる物体(other)から反射ベクトルをとる
-            Vector3 reflectVec = Vector3.Reflect(this.transform.forward, other.transform.up);
-            //2.動いてる物体のrotationを変更する
-            this.transform.rotation = Quaternion.LookRotation(reflectVec.normalized);
-            //3.動いてる物体のrigidbodyのベロシティを変更する
-            _rb.velocity = _speed * this.transform.forward;
-
+        else if(other.gameObject.tag == "Obstacle") {
+            Destroy(gameObject);
         }
     }
 
+    void Clamp()
+    {
+        if (transform.position.x <= -5.6f || 5.9f <= transform.position.x) {
+            _rb.velocity = new Vector3(_rb.velocity.x * -1, _rb.velocity.y, _rb.velocity.z);
+        }
+    }
 }

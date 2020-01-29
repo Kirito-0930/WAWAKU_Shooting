@@ -22,7 +22,7 @@ public class Bullet : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player" || other.gameObject.tag == "Obstacle") {
+        if (other.gameObject.tag == "Player" || other.gameObject.tag == "Bomb" || other.gameObject.tag == "Obstacle") {
             Instantiate(_deathParticlePrefab, transform.position, Quaternion.identity);
             Death();
         }

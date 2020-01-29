@@ -4,65 +4,70 @@ using UnityEngine;
 
 public class Bomb : MonoBehaviour
 {
-    private BombSpawn _bombSpawn = null;
-    [SerializeField]
-    private GameObject _bullet = null;
+    [SerializeField] GameObject _bullet;
 
-    private List<GameObject> _list;
+    /// <summary> 爆発時の弾の数 </summary>
+    int _bulletNum;
 
-    //爆発時の弾の数
-    public int _bulletNum;
+    /// <summary> 爆弾の耐久値 </summary>
+    int _hp;
 
-    //爆弾の耐久値
-    public int _hp = 5;
+    bool isLife = true;
 
-    private bool is_life = true;
-
-    public void Start()
+    /// <summary>
+    /// Resources/PrefabsのフォルダからBombを出す
+    /// </summary>
+    /// <param name="_pos"> 出現ポイントが渡される </param>
+    /// <returns> 自分（Bomb）を返す </returns>
+    static public Bomb Create(Vector3 _pos)
     {
-        _bombSpawn = FindObjectOfType<BombSpawn>();
-        _list = new List<GameObject>();
+        var go = GameObject.Find("/Bombs");
+        var e = Resources.Load<Bomb>("Prefabs/Bomb");
+        var ins = Instantiate(e, go.transform);
+        ins.transform.position = _pos;
+        return ins;
+    }
+
+    void Start()
+    {
+        _hp = Random.Range(1, 5);
+        _bulletNum = Random.Range(10, 25);
         transform.Rotate(0, Random.Range(0, 360), 0);
     }
 
-    private void Update()
+    void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            BombAction();
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            Action();
         }
     }
 
-    private void OnTriggerEnter(Collider other)//ぶつかったら｛｝内の処理が実行
+    void OnTriggerEnter(Collider other)
     {
-        if (!is_life) return;
-        if (other.gameObject.tag == "Bullet")
-        {
-            BombAction();
-        }
-        else if (other.gameObject.tag == "BombBullet")
-        {
+        if (!isLife) return;
+        if (other.gameObject.tag == "Bullet") {
             _hp--;
-            if (_hp == 0) BombAction();
+            if (_hp == 0) Action();
+        }
+        else if (other.gameObject.tag == "BombBullet") {
+            _hp--;
+            if (_hp == 0) Action();
         }
     }
 
-    private GameObject CreateBullet()
+    GameObject CreateBullet()
     {
-        var bullet = GameObject.Instantiate(_bullet);
-        Vector3 pos = this.gameObject.transform.position;
+        var bullet = Instantiate(_bullet);
+        Vector3 pos = gameObject.transform.position;
         bullet.transform.Translate(pos);
         return bullet;
     }
 
-    private void BombAction() {
-        is_life = false;
-        _bombSpawn.DecrementTotalbombsCount();
-        for (int i = 0; i < _bulletNum; ++i)
-        {
-            _list.Add(CreateBullet());
+    void Action() {
+        isLife = false;
+        for (int i = 0; i < _bulletNum; i++) {
+            CreateBullet();
         }
         Destroy(gameObject);
     }
-
 }

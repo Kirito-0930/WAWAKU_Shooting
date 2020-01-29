@@ -358,7 +358,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interval: 1.5
-  sound1: {fileID: 8300000, guid: fee86de85e58b174588f35217b307163, type: 3}
+  _buttonSound: {fileID: 8300000, guid: fee86de85e58b174588f35217b307163, type: 3}
 --- !u!82 &746340594
 AudioSource:
   m_ObjectHideFlags: 0
