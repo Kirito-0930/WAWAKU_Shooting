@@ -21,7 +21,8 @@ public class BombCreate : MonoBehaviour
 
     void Start()
     {
-        for (int i = 0; i < _startBombNum; i++) {
+        for (int i = 0; i < _startBombNum; i++)
+        {
             Vector3 _pos = new Vector3(Random.Range(-5.0f, 5.0f), -5.3f, Random.Range(-3.1f, 3.1f));
             _bombs.Add(Bomb.Create(_pos));
         }
@@ -29,10 +30,8 @@ public class BombCreate : MonoBehaviour
 
     void Update()
     {
-        if (_bombs.Count >= _maxBombNum) {
-            
-        }
-        if (_bombCreateInterval <= _minInterval) {
+        if (_bombCreateInterval <= _minInterval)
+        {
             _bombCreateInterval = _minInterval;
         }
     }
@@ -40,7 +39,8 @@ public class BombCreate : MonoBehaviour
     void FixedUpdate()
     {
         _time += Time.deltaTime;
-        if (_bombCreateInterval <= _time) {
+        if (_bombCreateInterval <= _time)
+        {
             _bombs.Add(Bomb.Create(new Vector3(Random.Range(-5.0f, 5.0f), -5.3f, Random.Range(-3.1f, 3.1f))));
             _bombCreateInterval -= _decreaseInterval;
             _time = 0;

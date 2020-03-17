@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class Title : MonoBehaviour
 {
     /// <summary> ボタンを押してからシーンが変わるまでの時間 </summary>
-    [SerializeField] float _interval = 1.5f;
+    [SerializeField] float _interval = 1.0f;
     [SerializeField] AudioClip _buttonSound;
     AudioSource _se;
     AudioSource _bgm;
@@ -23,7 +23,8 @@ public class Title : MonoBehaviour
  
     void Update()
     {
-        if (Input.GetButtonDown("Fire2") && isStart) {
+        if (Input.GetButtonDown("Fire2") && isStart) 
+        {
             isStart = false;
             _bgm.Stop();
             _se.PlayOneShot(_buttonSound);

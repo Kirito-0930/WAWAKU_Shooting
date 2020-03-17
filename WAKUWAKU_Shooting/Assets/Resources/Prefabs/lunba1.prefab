@@ -232,7 +232,7 @@ MonoBehaviour:
     type: 3}
   _hpGauge: {fileID: 8103677790250582987}
   _bulletSpawn: {fileID: 471165128945146859}
-  _interval: 0.2
+  _interval: 0.3
   _hp: 10
 --- !u!1 &6310941785245094606
 GameObject:

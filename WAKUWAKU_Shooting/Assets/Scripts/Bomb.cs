@@ -8,11 +8,9 @@ public class Bomb : MonoBehaviour
 
     /// <summary> 爆発時の弾の数 </summary>
     int _bulletNum;
-
     /// <summary> 爆弾の耐久値 </summary>
     int _hp;
-
-    bool isLife = true;
+    bool isLife;
 
     /// <summary>
     /// Resources/PrefabsのフォルダからBombを出す
@@ -30,6 +28,7 @@ public class Bomb : MonoBehaviour
 
     void Start()
     {
+        isLife = true;
         _hp = Random.Range(1, 5);
         _bulletNum = Random.Range(10, 25);
         transform.Rotate(0, Random.Range(0, 360), 0);
@@ -37,22 +36,16 @@ public class Bomb : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            Action();
-        }
+        _hp = Mathf.Clamp(_hp, 0, 5);
+        if (Input.GetKeyDown(KeyCode.F1)) Action();
+        if (_hp == 0) Action();
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (!isLife) return;
-        if (other.gameObject.tag == "Bullet") {
-            _hp--;
-            if (_hp == 0) Action();
-        }
-        else if (other.gameObject.tag == "BombBullet") {
-            _hp--;
-            if (_hp == 0) Action();
-        }
+        //if (!isLife) return;
+        if (other.gameObject.tag == "Bullet") _hp--;
+        else if (other.gameObject.tag == "BombBullet") _hp--;
     }
 
     GameObject CreateBullet()
@@ -63,9 +56,13 @@ public class Bomb : MonoBehaviour
         return bullet;
     }
 
-    void Action() {
+    void Action()
+    {
         isLife = false;
-        for (int i = 0; i < _bulletNum; i++) {
+        GameView.Get().SE(GameView.SEType.bomb);
+        Destroy(transform.GetChild(0).gameObject);
+        for (int i = 0; i < _bulletNum; i++)
+        {
             CreateBullet();
         }
         Destroy(gameObject);

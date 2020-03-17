@@ -14,7 +14,9 @@ public class Player1 : MonoBehaviour
     /// <summary> 弾の発射点 </summary>
     [SerializeField] Transform _bulletSpawn;
     /// <summary> 弾の発射間隔 </summary>
-    [SerializeField] float _interval = 0.3f;
+    [SerializeField] float _interval = 0.5f;
+
+    Rigidbody _rb;
 
     float _moveHorizontal;
     float _moveVertical;
@@ -26,6 +28,7 @@ public class Player1 : MonoBehaviour
 
     void Start()
     {
+        _rb = gameObject.GetComponent<Rigidbody>();
         _maxHp = _hp;
     }
 
@@ -42,17 +45,13 @@ public class Player1 : MonoBehaviour
 
     void FixedUpdate()
     {
-        gameObject.GetComponent<Rigidbody>().velocity = new Vector3(_moveHorizontal * _speed, 0.0f, _moveVertical * _speed);
+        _rb.velocity = new Vector3(_moveHorizontal * _speed, 0.0f, _moveVertical * _speed);
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Bullet") {
-            _hp--;
-        }
-        else if (other.gameObject.tag == "BombBullet") {
-            _hp--;
-        }
+        if (other.gameObject.tag == "Bullet") _hp--;
+        else if (other.gameObject.tag == "BombBullet") _hp--;
     }
 
     /// <summary>
@@ -62,12 +61,15 @@ public class Player1 : MonoBehaviour
     {
         float _directionHorizontal = Input.GetAxis("Horizontal2_1");
         float _directionVertical = Input.GetAxis("Vertical2_1");
-        if (_directionHorizontal != 0 || _directionVertical != 0) {
+
+        if (_directionHorizontal != 0 || _directionVertical != 0) 
+        {
             var _direction = new Vector3(_directionHorizontal, 0, _directionVertical);
             transform.localRotation = Quaternion.LookRotation(_direction);
             Shoot();
         }
-        else if(_moveHorizontal != 0 || _moveVertical != 0) {
+        else if(_moveHorizontal != 0 || _moveVertical != 0) 
+        {
             var _direction = new Vector3(-_moveHorizontal, 0, -_moveVertical);
             transform.localRotation = Quaternion.LookRotation(_direction);
         }
@@ -96,7 +98,9 @@ public class Player1 : MonoBehaviour
     void Shoot()
     {
         _elapsedTime += Time.deltaTime;
-        if (_elapsedTime > _interval) {
+        if (_elapsedTime > _interval) 
+        {
+            GameView.Get().SE(GameView.SEType.shot);
             Instantiate(_bulletPrefab, _bulletSpawn.position, transform.localRotation);
             _elapsedTime = 0f;
         }
@@ -107,9 +111,7 @@ public class Player1 : MonoBehaviour
     /// </summary>
     void DeathJudgment()
     {
-        if (_hp <= 0) {
-            GameView.isPlayer2 = true;
-        }
+        if (_hp == 0) GameView.isPlayer2 = true;
     }
 
     /// <summary>
