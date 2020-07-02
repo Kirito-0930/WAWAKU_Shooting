@@ -349,7 +349,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 405816387}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
@@ -824,12 +824,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8ff0160560075f4aa2793472f29b0d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxBombNum: 10
-  _startBombNum: 3
-  _bombCreateInterval: 10
-  _decreaseInterval: 0.5
-  _minInterval: 2
-  _bombs: []
+  bombs: []
+  bombCreateInterval: 10
+  decreaseInterval: 0.5
+  minInterval: 2
+  maxBombCount: 100
+  startBombCount: 3
 --- !u!1 &960548360
 GameObject:
   m_ObjectHideFlags: 0
@@ -986,20 +986,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47dcff2581037db4ca40cbf6f0e7818e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player1Prefab: {fileID: 6021591942157480518, guid: 1d8007bb26e5bd04fabbdd65feb42ced,
+  blueWin: {fileID: 960548360}
+  player1Prefab: {fileID: 6021591942157480518, guid: 1d8007bb26e5bd04fabbdd65feb42ced,
     type: 3}
-  _player2Prefab: {fileID: 4003787457165902844, guid: 42259aae9e8e6ff4b98347b9d704832c,
+  player2Prefab: {fileID: 4003787457165902844, guid: 42259aae9e8e6ff4b98347b9d704832c,
     type: 3}
-  _blue: {fileID: 960548360}
-  _red: {fileID: 245020602}
-  _seEnd: {fileID: 8300000, guid: a2fc61c35548dd946b5b572429691e4b, type: 3}
-  _seCountDown: {fileID: 8300000, guid: 2f5d0f8436422c2428343b57f6a6faa6, type: 3}
-  _seStart: {fileID: 8300000, guid: 3fd0c57f2919f4a4cb851b3db2763b56, type: 3}
-  _seShot: {fileID: 8300000, guid: e46e1ca05f2cf364eb7ce59255332b76, type: 3}
-  _seBomb: {fileID: 8300000, guid: e0eceb6415a74a845874333cdffb933e, type: 3}
-  _seButton: {fileID: 8300000, guid: fee86de85e58b174588f35217b307163, type: 3}
-  _bgmGame: {fileID: 8300000, guid: 3658120f61dd4a04a9739568f0c6e224, type: 3}
-  _bgmResult: {fileID: 8300000, guid: 2d7f7d63f6c572446a18d606dde3b61f, type: 3}
+  redWin: {fileID: 245020602}
+  bgmGame: {fileID: 8300000, guid: 3658120f61dd4a04a9739568f0c6e224, type: 3}
+  bgmResult: {fileID: 8300000, guid: 2d7f7d63f6c572446a18d606dde3b61f, type: 3}
+  seBomb: {fileID: 8300000, guid: e0eceb6415a74a845874333cdffb933e, type: 3}
+  seButton: {fileID: 8300000, guid: b56456144f3e5c346ae0c2161d98978f, type: 3}
+  seCountDown: {fileID: 8300000, guid: 2f5d0f8436422c2428343b57f6a6faa6, type: 3}
+  seEnd: {fileID: 8300000, guid: a2fc61c35548dd946b5b572429691e4b, type: 3}
+  seShot: {fileID: 8300000, guid: e46e1ca05f2cf364eb7ce59255332b76, type: 3}
+  seStart: {fileID: 8300000, guid: 3fd0c57f2919f4a4cb851b3db2763b56, type: 3}
 --- !u!82 &963194231
 AudioSource:
   m_ObjectHideFlags: 0

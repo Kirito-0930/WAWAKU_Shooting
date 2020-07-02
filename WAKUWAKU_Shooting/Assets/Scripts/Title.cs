@@ -1,40 +1,42 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Title : MonoBehaviour
 {
-    /// <summary> ボタンを押してからシーンが変わるまでの時間 </summary>
-    [SerializeField] float _interval = 1.0f;
-    [SerializeField] AudioClip _buttonSound;
-    AudioSource _se;
-    AudioSource _bgm;
+    [SerializeField] AudioClip buttonSound;
 
-    bool isStart;
+    /// <summary> ボタンを押してからシーンが変わるまでの時間 </summary>
+    [SerializeField] float interval = 1.0f;
+
+    AudioSource bgmSource;
+    AudioSource seSource;
 
     void Start()
     {
-        isStart = true;
         FadeManager.FadeIn();
-        _se = GetComponents<AudioSource>()[0];
-        _bgm = GetComponents<AudioSource>()[1];
+
+        GetAudioSources();
     }
  
     void Update()
     {
-        if (Input.GetButtonDown("Fire2") && isStart) 
+        if (Input.GetButtonDown("Fire2")) 
         {
-            isStart = false;
-            _bgm.Stop();
-            _se.PlayOneShot(_buttonSound);
-            StartCoroutine(NextScene(_interval));
+            bgmSource.Stop();
+            seSource.PlayOneShot(buttonSound);
+            StartCoroutine(NextScene(interval));
         }
     }
 
-    IEnumerator NextScene(float _interval)
+    void GetAudioSources()
     {
-        yield return new WaitForSeconds(_interval);
+        bgmSource = GetComponents<AudioSource>()[0];
+        seSource = GetComponents<AudioSource>()[1];
+    }
+
+    IEnumerator NextScene(float interval)
+    {
+        yield return new WaitForSeconds(interval);
         FadeManager.FadeOut(1);
     }
 }

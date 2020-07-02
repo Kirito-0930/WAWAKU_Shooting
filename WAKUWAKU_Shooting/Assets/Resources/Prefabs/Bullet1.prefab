@@ -75,9 +75,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e18a8b4e4b5532d44b83443b725c15f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 5
-  _deathParticlePrefab: {fileID: 12020828015934075, guid: f1471181ffa859548933cf12c54ba96b,
+  deathParticlePrefab: {fileID: 12020828015934075, guid: f1471181ffa859548933cf12c54ba96b,
     type: 3}
+  speed: 5
 --- !u!1 &9125553528242382902
 GameObject:
   m_ObjectHideFlags: 0

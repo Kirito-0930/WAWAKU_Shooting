@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 
 public class GameView : MonoBehaviour
@@ -8,71 +6,67 @@ public class GameView : MonoBehaviour
     static GameView mySelf;
     static public GameView Get() { return mySelf; }
 
-    /// <summary> Player1のPrefab </summary>
-    [SerializeField] GameObject _player1Prefab;
-    /// <summary> Player2のPrefab </summary>
-    [SerializeField] GameObject _player2Prefab;
-    [SerializeField] GameObject _blue;
-    [SerializeField] GameObject _red;
-    [SerializeField] AudioClip _seEnd;
-    [SerializeField] AudioClip _seCountDown;
-    [SerializeField] AudioClip _seStart;
-    [SerializeField] AudioClip _seShot;
-    [SerializeField] AudioClip _seBomb;
-    [SerializeField] AudioClip _seButton;
-    [SerializeField] AudioClip _bgmGame;
-    [SerializeField] AudioClip _bgmResult;
-    AudioSource _se;
-    AudioSource _bgm;
+    //player2が勝利した時の演出オブジェクト
+    [SerializeField] GameObject blueWin;
+    [SerializeField] GameObject player1Prefab;
+    [SerializeField] GameObject player2Prefab;
+    //player1が勝利した時の演出オブジェクト
+    [SerializeField] GameObject redWin;
 
-    Vector3 _centerPoint;
-    Vector3 _pos;
+    //各BGM,SEの音源データ
+    [SerializeField] AudioClip bgmGame;
+    [SerializeField] AudioClip bgmResult;
+    [SerializeField] AudioClip seBomb;
+    [SerializeField] AudioClip seButton;
+    [SerializeField] AudioClip seCountDown;
+    [SerializeField] AudioClip seEnd;
+    [SerializeField] AudioClip seShot;
+    [SerializeField] AudioClip seStart;
+  
+    AudioSource bgmSource;
+    AudioSource seSource;
+
+    //プレイヤーの生成する位置に使用する
+    Vector3 centerPoint;
+    Vector3 pos;
 
     public enum SEType { bomb, shot };
-    static public bool isPlayer1 = false;
-    static public bool isPlayer2 = false;
+
     static public bool isGamePlay = false;
-    bool isCheck;
+    static public bool isPlayer1Dead = false;
+    static public bool isPlayer2Dead = false;
+
+    bool isFinishCheck;
 
     void Awake()
     {
-        mySelf = this;
-        isPlayer1 = false; isPlayer2 = false; isGamePlay = false;
-        isCheck = true;
+        mySelf = this;              //MySelfにこのスクリプトを入れる
+        isPlayer1Dead = false; isPlayer2Dead = false; isGamePlay = false;   //最初プレイヤーは入力は受け付けない
+        isFinishCheck = false;   //どちらかのプレイヤーのHPが0になるとtureになる
     }
 
     void Start()
     {
-        _se = GetComponents<AudioSource>()[0];
-        _bgm = GetComponents<AudioSource>()[1];
-        _centerPoint = new Vector3(UnityEngine.Random.Range(-1.0f, 1.3f), -5.0f, 0.0f);
-        PlayerCreate(_player1Prefab);
-        PlayerCreate(_player2Prefab);
+        centerPoint = new Vector3(Random.Range(-1.0f, 1.3f), -5.0f, 0.0f);   //円の原点を指定
+
+        GetAudioSources();
+
+        PlayerCreate(player1Prefab);
+        PlayerCreate(player2Prefab);
+
         StartCoroutine(GameStart());
     }
 
     void Update()
     {
-        if (isPlayer1 || isPlayer2)
+        if (isPlayer1Dead || isPlayer2Dead)
         {
-            if (isCheck)
+            if (!isFinishCheck)
             {
-                Finish();
-                isCheck = false;
+                GameFinish();
+                isFinishCheck = true;
             }
             GoToTitle();
-        }
-    }
-
-    /// <summary>
-    /// タイトルに戻る
-    /// </summary>
-    void GoToTitle()
-    {
-        if (Input.GetButtonDown("Fire2"))
-        {
-            _se.PlayOneShot(_seButton);
-            Invoke("Fade", 0.5f);
         }
     }
 
@@ -81,79 +75,91 @@ public class GameView : MonoBehaviour
         FadeManager.FadeOut(0);
     }
 
-    /// <summary>
-    /// ゲームスタート時にPlayerを生成
-    /// </summary>
-    /// <param name="_player">_player1Prefab、_player2Prefabが渡される</param>
-    void PlayerCreate(GameObject _player)
+    /// <summary>ゲーム終了</summary>
+    /// <returns>SEが鳴り終わるまで待つ</returns>
+    void GameFinish()
     {
-        if (_player == _player1Prefab)
+        bgmSource.Stop();
+        seSource.PlayOneShot(seEnd);
+
+        //勝った方の勝利演出をtureにする
+        if (isPlayer1Dead) redWin.SetActive(true);
+        else if (isPlayer2Dead) blueWin.SetActive(true);
+
+        //プレイヤー入力の受付を停止
+        isGamePlay = false;
+        Invoke("FinishBGM", 0.3f);
+    }
+
+    void GetAudioSources()
+    {
+        bgmSource = GetComponents<AudioSource>()[0];
+        seSource = GetComponents<AudioSource>()[1];
+    }
+
+    void FinishBGM()
+    {
+        bgmSource.clip = bgmResult;
+        bgmSource.Play();
+    }
+
+    /// <summary>タイトルに戻る</summary>
+    void GoToTitle()
+    {
+        if (Input.GetButtonDown("Fire2"))
         {
-            _pos = new Vector3(UnityEngine.Random.Range(-1.0f, 1.0f), 0, UnityEngine.Random.Range(-1.0f, 1.0f)).normalized * 3.0f;
-            Instantiate(_player, _centerPoint + _pos, Quaternion.identity);
-        }
-        else if (_player == _player2Prefab)
-        {
-            Instantiate(_player, _centerPoint - _pos, Quaternion.identity);
+            seSource.PlayOneShot(seButton);
+            Invoke("Fade", 0.5f);
         }
     }
 
-    /// <summary>
-    /// SE音を鳴らす
-    /// </summary>
+    /// <summary>ゲームスタート時にPlayerを生成</summary>
+    /// <param name="_player">_player1Prefabか_player2Prefabが渡される</param>
+    void PlayerCreate(GameObject _player)
+    {
+        if (_player == player1Prefab)
+        {
+            //半径1の円周上のランダムな点を指定
+            pos = new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f)).normalized * 3.0f;
+            Instantiate(_player, centerPoint + pos, Quaternion.identity);
+        }
+        else if (_player == player2Prefab)
+        {
+            Instantiate(_player, centerPoint - pos, Quaternion.identity);
+        }
+    }
+
+    /// <summary>SE音を鳴らす</summary>
     /// <param name="_seName">SEの種類</param>
     public void SE(SEType type)
     {
-        _se.Stop();
+        seSource.Stop();
         switch (type)
         {
             case SEType.bomb:
-                _se.PlayOneShot(_seBomb);
+                seSource.PlayOneShot(seBomb);
                 break;
             case SEType.shot:
-                _se.PlayOneShot(_seShot);
+                seSource.PlayOneShot(seShot);
                 break;
             default:
                 break;
         }
     }
 
-    /// <summary>
-    /// ゲーム終了
-    /// </summary>
-    /// <returns>SEが鳴り終わるまで待つ</returns>
-    void Finish()
-    {
-        _bgm.Stop();
-        _se.PlayOneShot(_seEnd);
-        if (isPlayer1) _red.SetActive(true);
-        else if (isPlayer2) _blue.SetActive(true);
-        isGamePlay = false;
-        Invoke("FinishBGM", 0.3f);
-    }
-
-    void FinishBGM()
-    {
-        _bgm.clip = _bgmResult;
-        _bgm.Play();
-    }
-
-    /// <summary>
-    /// ゲームを開始する
-    /// </summary>
-    /// <returns>3秒待つ</returns>
+    // 3秒カウントしてからゲームを開始する
     IEnumerator GameStart()
     {
         yield return new WaitForSeconds(0.1f);
-        _bgm.clip = _bgmGame;
+        bgmSource.clip = bgmGame;
         for (int i = 0; i < 3; i++)
         {
-            _se.PlayOneShot(_seCountDown);
+            seSource.PlayOneShot(seCountDown);
             yield return new WaitForSeconds(1f);
         }
-        _se.PlayOneShot(_seStart);
+        seSource.PlayOneShot(seStart);
         isGamePlay = true;
         yield return new WaitForSeconds(0.2f);
-        _bgm.Play();
+        bgmSource.Play();
     }
 }

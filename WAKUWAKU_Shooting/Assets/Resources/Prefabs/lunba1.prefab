@@ -227,13 +227,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b149a59ec9cf9624eb2272819f93540a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 3
-  _bulletPrefab: {fileID: 2858497435796751270, guid: 41df78f5a1ca68142b98d4dad916368a,
+  bulletPrefab: {fileID: 2858497435796751270, guid: 41df78f5a1ca68142b98d4dad916368a,
     type: 3}
-  _hpGauge: {fileID: 8103677790250582987}
-  _bulletSpawn: {fileID: 471165128945146859}
-  _interval: 0.3
-  _hp: 10
+  hpGauge: {fileID: 8103677790250582987}
+  bulletSpawn: {fileID: 471165128945146859}
+  interval: 0.5
+  maxHp: 10
+  speed: 3
 --- !u!1 &6310941785245094606
 GameObject:
   m_ObjectHideFlags: 0

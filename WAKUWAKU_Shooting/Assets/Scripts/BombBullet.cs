@@ -1,62 +1,65 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class BombBullet : MonoBehaviour
 {
+    Rigidbody rb;
 
-    [SerializeField] float _speed = 3.0f;
-    float _time = 0.0f;
-    /// <summary>消滅時間</summary>
-    float _destroyTime = 2.0f;
+    //弾の速度
+    [SerializeField] float speed = 3.0f;
+
+    //弾が消失するまでの時間
+    float destroyTime = 2.0f;
     /// <summary>移動方向のベクトル</summary>
-    float _moveVector = 1.0f;
-
-    Rigidbody _rb;
+    float moveVector = 1.0f;
+    //弾が生成されてからの時間
+    float spawnTime = 0.0f;
 
     void Start()
     {
-        Vector3 _pos = new Vector3(Random.Range(_moveVector * -1, _moveVector), 0, Random.Range(_moveVector * -1, _moveVector));
-        gameObject.transform.Translate(_pos);
-        gameObject.transform.Rotate(_pos);
-        _rb = GetComponent<Rigidbody>();
-        transform.rotation = Quaternion.LookRotation(_pos.normalized);
-        _rb.velocity = transform.forward * _speed;
+        rb = GetComponent<Rigidbody>();
+
+        //弾の移動
+        float x, z;
+        x = Random.Range(-moveVector, moveVector);
+        z = Random.Range(-moveVector, moveVector);
+        Vector3 pos = new Vector3(x, 0, z);
+        gameObject.transform.Translate(pos);
+        gameObject.transform.Rotate(pos);
+
+        transform.rotation = Quaternion.LookRotation(pos.normalized);
+
+        rb.velocity = transform.forward * speed;
     }
 
     void Update()
     {
-        if (_time > _destroyTime) {
-            Death();
+        if (spawnTime > destroyTime) {
+            MyKill();
         }
-        Clamp();
+        MoveClamp();
     }
 
     void FixedUpdate()
     {
-        _time += Time.deltaTime;
+        spawnTime += Time.deltaTime;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player") Death();
-        else if (other.gameObject.tag == "Bomb") Death();
-        else if (other.gameObject.tag == "Obstacle") Death();
+        if (other.gameObject.tag == "Player")           MyKill();
+        else if (other.gameObject.tag == "Bomb")     MyKill();
+        else if (other.gameObject.tag == "Obstacle") MyKill();
     }
 
-    /// <summary>
-    /// 左右の壁に当たった時の処理
-    /// </summary>
-    void Clamp()
+    /// <summary>左右の壁に当たったら反射させる処理</summary>
+    void MoveClamp()
     {
         if (transform.position.x <= -5.8f || 5.9f <= transform.position.x) 
-            _rb.velocity = new Vector3(_rb.velocity.x * -1, _rb.velocity.y, _rb.velocity.z);
+            rb.velocity = new Vector3(rb.velocity.x * -1, rb.velocity.y, rb.velocity.z);
     }
 
-    /// <summary>
-    /// 自分が死ぬ処理
-    /// </summary>
-    void Death() 
+    /// <summary>自分を消す処理</summary>
+    void MyKill() 
     {
         Destroy(gameObject);
     }

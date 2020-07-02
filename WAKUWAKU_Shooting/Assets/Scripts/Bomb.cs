@@ -1,20 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Bomb : MonoBehaviour
 {
-    [SerializeField] GameObject _bullet;
+    [SerializeField] GameObject bulletObject;
 
     /// <summary> 爆発時の弾の数 </summary>
-    int _bulletNum;
+    int bulletCount;
     /// <summary> 爆弾の耐久値 </summary>
-    int _hp;
-    bool isLife;
+    int bomb_Hp;
 
-    /// <summary>
-    /// Resources/PrefabsのフォルダからBombを出す
-    /// </summary>
+    //爆発した時、弾を出す関数
+    GameObject CreateBullet()
+    {
+        var bullet = Instantiate(bulletObject);
+        Vector3 pos = gameObject.transform.position;
+        bullet.transform.Translate(pos);
+        return bullet;
+    }
+
+    /// <summary>Resources/PrefabsのフォルダからBombを生成</summary>
     /// <param name="_pos"> 出現ポイントが渡される </param>
     /// <returns> 自分（Bomb）を返す </returns>
     static public Bomb Create(Vector3 _pos)
@@ -28,43 +32,35 @@ public class Bomb : MonoBehaviour
 
     void Start()
     {
-        isLife = true;
-        _hp = Random.Range(1, 5);
-        _bulletNum = Random.Range(10, 25);
+        bomb_Hp = Random.Range(1, 6);
+        bulletCount = Random.Range(10, 25);
         transform.Rotate(0, Random.Range(0, 360), 0);
     }
 
     void Update()
     {
-        _hp = Mathf.Clamp(_hp, 0, 5);
-        if (Input.GetKeyDown(KeyCode.F1)) Action();
-        if (_hp == 0) Action();
+        bomb_Hp = Mathf.Clamp(bomb_Hp, 0, 5);   //HPを0以下にしないようにする
+        if (bomb_Hp == 0) Action();
     }
 
     void OnTriggerEnter(Collider other)
     {
-        //if (!isLife) return;
-        if (other.gameObject.tag == "Bullet") _hp--;
-        else if (other.gameObject.tag == "BombBullet") _hp--;
+        if (other.gameObject.tag == "Bullet")                bomb_Hp--;
+        else if (other.gameObject.tag == "BombBullet") bomb_Hp--;
     }
 
-    GameObject CreateBullet()
-    {
-        var bullet = Instantiate(_bullet);
-        Vector3 pos = gameObject.transform.position;
-        bullet.transform.Translate(pos);
-        return bullet;
-    }
-
+    //爆発するときの関数
     void Action()
     {
-        isLife = false;
-        GameView.Get().SE(GameView.SEType.bomb);
-        Destroy(transform.GetChild(0).gameObject);
-        for (int i = 0; i < _bulletNum; i++)
+        GameView.Get().SE(GameView.SEType.bomb);   //GameViewに爆発SEを鳴らすように指示
+
+        Destroy(transform.GetChild(0).gameObject);      //爆弾の見た目を消す
+
+        for (int i = 0; i < bulletCount; i++)
         {
             CreateBullet();
         }
+
         Destroy(gameObject);
     }
 }

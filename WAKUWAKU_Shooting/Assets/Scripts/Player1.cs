@@ -1,124 +1,113 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class Player1 : MonoBehaviour
 {
-    /// <summary> Playerのスピード </summary>
-    [SerializeField] int _speed = 3;
     /// <summary> 弾のプレハブ </summary>
-    [SerializeField] GameObject _bulletPrefab;
-    /// <summary> Player1のHPゲージ </summary>
-    [SerializeField] Image _hpGauge;
+    [SerializeField] GameObject bulletPrefab;
+    /// <summary> HPゲージ </summary>
+    [SerializeField] Image hpGauge;
     /// <summary> 弾の発射点 </summary>
-    [SerializeField] Transform _bulletSpawn;
+    [SerializeField] Transform bulletSpawn;
+
     /// <summary> 弾の発射間隔 </summary>
-    [SerializeField] float _interval = 0.5f;
+    [SerializeField] float interval = 0.5f;
 
-    Rigidbody _rb;
+    [SerializeField] int maxHp = 10;
+    /// <summary> 移動スピード </summary>
+    [SerializeField] int speed = 3;
+ 
+    Rigidbody rb;
 
-    float _moveHorizontal;
-    float _moveVertical;
-    /// <summary> 弾発射中の経過時間 </summary>
-    float _elapsedTime;
-    /// <summary> Player1のHP </summary>
-    public int _hp = 10;
-    int _maxHp;
+    //弾を発射してからの経過時間
+    float elapsedTime;
+    float moveHorizontal;
+    float moveVertical;
+
+    //現在のHP
+    int hp;
 
     void Start()
     {
-        _rb = gameObject.GetComponent<Rigidbody>();
-        _maxHp = _hp;
+        hp = maxHp;
+        rb = gameObject.GetComponent<Rigidbody>();
     }
 
     void Update()
     {
-        if (GameView.isGamePlay) {
+        if (GameView.isGamePlay) {   //ゲームが開始されたかどうか
+            DeathJudgment();
             Direction();
             Move();
-            Clamp();
-            DeathJudgment();
+            MoveClamp();
             PhysicalView();
         }
     }
 
     void FixedUpdate()
     {
-        _rb.velocity = new Vector3(_moveHorizontal * _speed, 0.0f, _moveVertical * _speed);
+        rb.velocity = new Vector3(moveHorizontal * speed, 0.0f, moveVertical * speed);
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Bullet") _hp--;
-        else if (other.gameObject.tag == "BombBullet") _hp--;
+        if (other.gameObject.tag == "Bullet") hp--;
+        else if (other.gameObject.tag == "BombBullet") hp--;
     }
 
-    /// <summary>
-    /// Player1の方向
-    /// </summary>
+    //Playerが死んだらGameViewに伝える
+    void DeathJudgment()
+    {
+        if (hp == 0) GameView.isPlayer2Dead = true;
+    }
+
+    //Playerの向いている方向
     void Direction()
     {
-        float _directionHorizontal = Input.GetAxis("Horizontal2_1");
-        float _directionVertical = Input.GetAxis("Vertical2_1");
+        float directionHorizontal = Input.GetAxis("Horizontal2_1");
+        float directionVertical = Input.GetAxis("Vertical2_1");
 
-        if (_directionHorizontal != 0 || _directionVertical != 0) 
+        if (directionHorizontal != 0 || directionVertical != 0)   //方向キーが入力されている場合
         {
-            var _direction = new Vector3(_directionHorizontal, 0, _directionVertical);
-            transform.localRotation = Quaternion.LookRotation(_direction);
+            var direction = new Vector3(directionHorizontal, 0, directionVertical);
+            transform.localRotation = Quaternion.LookRotation(direction);
             Shoot();
         }
-        else if(_moveHorizontal != 0 || _moveVertical != 0) 
+        else if(moveHorizontal != 0 || moveVertical != 0)   //方向キーが入力されていない場合
         {
-            var _direction = new Vector3(-_moveHorizontal, 0, -_moveVertical);
-            transform.localRotation = Quaternion.LookRotation(_direction);
+            var direction = new Vector3(-moveHorizontal, 0, -moveVertical);
+            transform.localRotation = Quaternion.LookRotation(direction);
         }
     }
 
-    /// <summary>
-    /// Player1の移動
-    /// </summary>
+    //Playerの移動キーの入力
     void Move()
     {
-        _moveHorizontal = Input.GetAxis("Horizontal1_1");
-        _moveVertical = Input.GetAxis("Vertical1_1");
+        moveHorizontal = Input.GetAxis("Horizontal1_1");
+        moveVertical = Input.GetAxis("Vertical1_1");
     }
 
-    /// <summary>
-    /// Playerの移動制限
-    /// </summary>
-    void Clamp()
+    //Playerの移動制限
+    void MoveClamp()
     {
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, -5.0f, 5.3f), transform.position.y, Mathf.Clamp(transform.position.z, -3.1f, 3.1f));
     }
 
-    /// <summary>
-    /// 弾を撃つ
-    /// </summary>
-    void Shoot()
-    {
-        _elapsedTime += Time.deltaTime;
-        if (_elapsedTime > _interval) 
-        {
-            GameView.Get().SE(GameView.SEType.shot);
-            Instantiate(_bulletPrefab, _bulletSpawn.position, transform.localRotation);
-            _elapsedTime = 0f;
-        }
-    }
-
-    /// <summary>
-    /// Player1が死んだかどうかの判定
-    /// </summary>
-    void DeathJudgment()
-    {
-        if (_hp == 0) GameView.isPlayer2 = true;
-    }
-
-    /// <summary>
-    /// PlayerHPの表示
-    /// </summary>
+    //現在のPlayerHPの表示
     void PhysicalView()
     {
-        _hpGauge.fillAmount = (float)_hp / _maxHp;
+        hpGauge.fillAmount = (float)hp / maxHp;
+    }
+
+    //弾を撃つ
+    void Shoot()
+    {
+        elapsedTime += Time.deltaTime;
+        if (elapsedTime > interval) 
+        {
+            GameView.Get().SE(GameView.SEType.shot);
+            Instantiate(bulletPrefab, bulletSpawn.position, transform.localRotation);
+            elapsedTime = 0f;
+        }
     }
 }
